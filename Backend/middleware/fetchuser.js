@@ -1,25 +1,20 @@
 var jwt = require('jsonwebtoken');
-const { model } = require('mongoose');
 const JWT_secret = 'practice';
 
-
 const fetchuser = (req, res, next) => {
-
     const token = req.header('auth-token');
     
-    if(!token){
-        res.status(401).json('unauthorize access, token not found');
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized access, token not found' });
     }
 
     try {
         const data = jwt.verify(token, JWT_secret);
-        req.user = data;
+        req.user = { id: data.user.id };  // Set the user ID
         next();
     } catch (error) {
-        res.status(401).json('unauthorize access');
-        
+        return res.status(401).json({ error: 'Unauthorized access' });
     }
-
 }
 
 module.exports = fetchuser;
