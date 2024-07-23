@@ -38,11 +38,11 @@ router.post(
           tag,
           user: req.user.id
         });
-        console.log(note);
+      //  console.log(note);
       await note.save();
       res.json(note);
     } catch (error) {
-      console.error('Error during login:', error);
+      //console.error('Error during login:', error);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }

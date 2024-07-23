@@ -46,7 +46,17 @@ function Addnote() {
             name="description"
             onChange={changeHandler}
           ></textarea>
-          <button className='btn-primary my-3' onClick={clickHandler}>Submit</button>
+          <label htmlFor="exampleFormControlTextarea1" className="form-label">
+            tag
+          </label>
+          <textarea
+            className="form-control"
+            id="exampleFormControlTextarea1"
+            rows="1"
+            name="tag"
+            onChange={changeHandler}
+          ></textarea>
+          <button className='btn btn-primary my-3' onClick={clickHandler}>Submit</button>
         </div>
       </div>
   )
