@@ -17,14 +17,15 @@ router.post('/createuser',
     ],
     async (req, res) => {
         const errors = validationResult(req);
+        let success = false;
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ success, errors: errors.array() });
         }
 
         try {
             let user = await User.findOne({ email: req.body.email });
             if (user) {
-                return res.status(400).json({ error: "Email already exists, enter a new one" });
+                return res.status(400).json({success, error: "Email already exists, enter a new one" });
             }
 
             const salt = await bcrypt.genSalt(10);
@@ -37,11 +38,11 @@ router.post('/createuser',
 
             await newUser.save();
             var token = jwt.sign({ user: { id: newUser.id } }, JWT_secret);
-
-            return res.status(200).json({ message: 'User created successfully', token });
+            sucess = true;
+            return res.status(200).json({ success, token });
         } catch (error) {
             console.error('Error creating user:', error);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(500).json(success, { error: 'Internal Server Error' });
         }
     }
 );
@@ -53,27 +54,29 @@ router.post('/login',
         body('password', 'Enter a valid Password').isLength({ min: 5 })
     ],
     async (req, res) => {
+        let success = false;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(401).json({ errors: errors.array() });
+            return res.status(401).json({success, errors: errors.array() });
         }
 
         try {
             const user = await User.findOne({ email: req.body.email });
             if (!user) {
-                return res.status(401).json({ error: 'Incorrect credentials' });
+                return res.status(401).json({success, error: 'Incorrect credentials' });
             }
 
             const isMatch = await bcrypt.compare(req.body.password, user.password);
             if (isMatch) {
                 var token = jwt.sign({ user: { id: user.id } }, JWT_secret);
-                return res.status(200).json({ message: 'User authenticated successfully', token });
+                success = true;
+                return res.status(200).json({success, message: 'User authenticated successfully', token });
             } else {
-                return res.status(401).json({ error: 'Incorrect credentials' });
+                return res.status(401).json({success, error: 'Incorrect credentials' });
             }
         } catch (error) {
             console.error('Error during login:', error);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(500).json({success, error: 'Internal Server Error' });
         }
     }
 );
