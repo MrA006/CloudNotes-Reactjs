@@ -12,7 +12,6 @@ const UserState = (props) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     
-
     const response = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: myHeaders,
@@ -20,11 +19,14 @@ const UserState = (props) => {
     });
     const res = await response.json();
     if(res.success){
-
+      
       localStorage.setItem('auth-token', res.token);
+      localStorage.setItem('logged', "true");
       navi('/');
+      return true;
     }else{
       alert('incorrect credentials');
+      return false;
     }
   }
 
@@ -33,7 +35,6 @@ const signUpUser = async (credentials) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     
-    console.log(JSON.stringify(credentials));
     const response = await fetch("http://localhost:5000/api/auth/createuser", {
       method: "POST",
       headers: myHeaders,
@@ -51,8 +52,16 @@ const signUpUser = async (credentials) => {
     
   }
 
+  //signOut 
+
+  const signOut = ()=>{
+    localStorage.setItem('auth-token', null);
+    localStorage.setItem('logged', 'false');
+
+  }
+
   return (
-    <UserContext.Provider value={{ loginUser, signUpUser }}>
+    <UserContext.Provider value={{ loginUser, signUpUser, signOut }}>
       {props.children}
     </UserContext.Provider>
   );

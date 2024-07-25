@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import NoteContext from "./createContext";
 
 const NoteState = (props) => {
   
   const [notes, setNotes] = useState([]);
+  
 
-  
   //get all notes
-  
   const getNotes = async () => {
-    const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
+    
+    const authToken = localStorage.getItem('auth-token');
+   // const authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("auth-token", authToken);
@@ -20,26 +20,34 @@ const NoteState = (props) => {
       headers: myHeaders,
     });
 
-    const notes = await response.json();
- 
-    setNotes(notes);
+    
+    const n = await response.json();
+    if(n.success){
+      setNotes(n.notes);
+
+    }else{
+      //console.log(n);
+    }
+
   };
 
 
 /////////////////##########
-useEffect(
-  ()=>{
-    getNotes();
-  },
-  []
-)
+// useEffect(
+//   ()=>{
+//     getNotes();
+//   },
+//   []
+// )
 ////////////////###########
 
 
   //add a Note
   const addNote = async (title, description, tag) => {
-    const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
+    
+  const authToken = localStorage.getItem('auth-token');
+    //const authToken =
+    //  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("auth-token", authToken);
@@ -75,8 +83,9 @@ useEffect(
     });
     setNotes(temp);
 
-    const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
+    const authToken = localStorage.getItem('auth-token');
+    //const authToken =
+     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("auth-token", authToken);
@@ -96,8 +105,9 @@ useEffect(
 
   const editNote = async (note) => {
 
-    const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
+    const authToken = localStorage.getItem('auth-token');
+    //const authToken =
+    //  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5YjQwNmIxZGU3ZGNhMTRhNGYzNTVkIn0sImlhdCI6MTcyMTQ1MDYwM30.9W4E-QPdd0Yc7_ABhsB2SDxLEfQJASJ9aub3LEHh5Fk";
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("auth-token", authToken);
@@ -124,7 +134,7 @@ useEffect(
 
 
   return (
-    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote }}>
+    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes}}>
       {props.children}
     </NoteContext.Provider>
   );

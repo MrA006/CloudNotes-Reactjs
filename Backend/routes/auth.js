@@ -38,7 +38,7 @@ router.post('/createuser',
 
             await newUser.save();
             var token = jwt.sign({ user: { id: newUser.id } }, JWT_secret);
-            sucess = true;
+            success = true;
             return res.status(200).json({ success, token });
         } catch (error) {
             console.error('Error creating user:', error);

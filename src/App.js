@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import About from './components/About';
@@ -9,6 +9,12 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 
 function App() {
+  
+  useEffect(() => {
+    localStorage.clear();
+    localStorage.setItem('logged', "false");
+  }, []);
+
   return (
     <div className="App">
       <UserState>

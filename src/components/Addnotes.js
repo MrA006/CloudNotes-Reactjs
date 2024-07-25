@@ -17,6 +17,7 @@ function Addnote() {
   const clickHandler = () =>{
     const {title, description,tag} = tempNote;
     addNote(title,description,tag);
+    setTempNote({title:'',description:'',tag:''});
   }
 
   return (
@@ -32,6 +33,7 @@ function Addnote() {
             id="exampleFormControlInput1"
             placeholder="Enter a title"
             name="title"
+            value={tempNote.title}
             onChange={changeHandler}
           />
         </div>
@@ -44,6 +46,7 @@ function Addnote() {
             id="exampleFormControlTextarea1"
             rows="3"
             name="description"
+            value={tempNote.description}
             onChange={changeHandler}
           ></textarea>
           <label htmlFor="exampleFormControlTextarea1" className="form-label">
@@ -54,6 +57,7 @@ function Addnote() {
             id="exampleFormControlTextarea1"
             rows="1"
             name="tag"
+            value={tempNote.tag}
             onChange={changeHandler}
           ></textarea>
           <button className='btn btn-primary my-3' onClick={clickHandler}>Submit</button>

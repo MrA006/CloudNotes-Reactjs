@@ -7,7 +7,6 @@ function Notes() {
   const { notes, editNote } = notesHandler;
   const ref = useRef(null);
   const refClose = useRef(null);
-
   const [tempNote, setTempNote] = useState({
     title: "",
     description: "",
@@ -136,7 +135,7 @@ function Notes() {
       <div className="container my-3">
         <h1>Your Notes</h1>
         <div className="row">
-          {notes.map((note) => {
+          {notes && notes.map((note) => {
             return (
               <Noteitem key={note._id} note={note} updateNote={updateNote} />
             );

@@ -1,23 +1,30 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import UserContext from "../context/users/createContext";
+import NoteContext from "../context/notes/createContext";
 
 function Login() {
+  const userHandler = useContext(UserContext);
+  const noteHandler = useContext(NoteContext);
+  const { loginUser } = userHandler;
+  const { getNotes } = noteHandler;
 
-    const userHandler = useContext(UserContext);
-    const {loginUser} = userHandler;
+  const [tempCred, setTempCred] = useState({
+    email: "",
+    password: "",
+  });
 
-    const [tempCred, setTempCred] = useState({
-        email: "",
-        password: "",
-      });
   const changeHandler = (e) => {
     setTempCred({ ...tempCred, [e.target.name]: e.target.value });
   };
 
-  const clickHandler = (e) => {
+  const clickHandler = async (e) => {
     e.preventDefault();
-    loginUser(tempCred);
-  }
+    const check = await loginUser(tempCred);
+    if (check) {
+      getNotes();
+    }
+  };
+
   return (
     <div className="container my-5">
       <form>
@@ -32,6 +39,7 @@ function Login() {
             name="email"
             aria-describedby="emailHelp"
             onChange={changeHandler}
+            value={tempCred.email}
           />
           <div id="emailHelp" className="form-text">
             Enter a unique email address
@@ -47,6 +55,7 @@ function Login() {
             id="exampleInputPassword1"
             name="password"
             onChange={changeHandler}
+            value={tempCred.password}
           />
         </div>
 
