@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import UserContext from "../context/users/createContext";
 import NoteContext from "../context/notes/createContext";
 
-function Login() {
+function Login(props) {
   const userHandler = useContext(UserContext);
   const noteHandler = useContext(NoteContext);
   const { loginUser } = userHandler;
@@ -22,10 +22,18 @@ function Login() {
     const check = await loginUser(tempCred);
     if (check) {
       getNotes();
+          
+          props.showAlert('logged in successfully', 'success');
+        
+    }else{
+          props.showAlert('login unsuccessfully', 'Error');
+
     }
   };
 
+
   return (
+    <>      
     <div className="container my-5">
       <form>
         <div className="mb-3">
@@ -64,6 +72,8 @@ function Login() {
         </button>
       </form>
     </div>
+    </>
+
   );
 }
 

@@ -3,10 +3,11 @@ import Notes from "./Notes";
 import Addnote from "./Addnotes";
 import { useNavigate } from "react-router-dom";
 
-function Home() {
+function Home(props) {
   const navigate = useNavigate();
   
   const logged = localStorage.getItem('logged') === 'true';
+
   
   useEffect(() => {
     if (!logged) {
@@ -19,8 +20,9 @@ function Home() {
   }
   return (
     <>
-      <Addnote />
-      <Notes />
+    
+      <Addnote showAlert={props.showAlert}/>
+      <Notes showAlert={props.showAlert}/>
     </>
   );
 }

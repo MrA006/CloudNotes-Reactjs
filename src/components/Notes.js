@@ -2,9 +2,11 @@ import React, { useContext, useRef, useState } from "react";
 import NoteContext from "../context/notes/createContext";
 import Noteitem from "./Noteitem";
 
-function Notes() {
+function Notes(props) {
   let notesHandler = useContext(NoteContext);
   const { notes, editNote } = notesHandler;
+  const {showAlert} = props;
+
   const ref = useRef(null);
   const refClose = useRef(null);
   const [tempNote, setTempNote] = useState({
@@ -17,7 +19,7 @@ function Notes() {
     ref.current.click();
     setTempNote(note);
   };
-
+  
   //handle textarea change
   const changeHandler = (e) => {
     setTempNote({ ...tempNote, [e.target.name]: e.target.value });
@@ -28,6 +30,7 @@ function Notes() {
     refClose.current.click();
     //const { title, description, tag } = tempNote;
     editNote(tempNote);
+    showAlert('Note Updated', 'success');
     //addNote(title, description, tag);
   };
 

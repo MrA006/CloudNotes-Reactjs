@@ -1,11 +1,14 @@
 import React, {useContext, useState} from 'react'
 import NoteContext from "../context/notes/createContext";
 
-function Addnote() {
+function Addnote(props) {
   
   let notesHandler = useContext(NoteContext);
   const {addNote} = notesHandler;
+  const {showAlert} = props;
   
+
+
   const [tempNote,setTempNote] = useState({title:'',description:'',tag:''});
 
   //handle textarea change
@@ -18,7 +21,13 @@ function Addnote() {
     const {title, description,tag} = tempNote;
     addNote(title,description,tag);
     setTempNote({title:'',description:'',tag:''});
+    showAlert('Note added','success');
   }
+
+  const descriptionLengthCheck = (tempNote.description.length>4);
+  const titleLengthCheck = (tempNote.title.length>4);
+  const lengthCheck = ( descriptionLengthCheck && titleLengthCheck)?false:true;
+  
 
   return (
     <div className="container my-3">
@@ -37,6 +46,7 @@ function Addnote() {
             onChange={changeHandler}
           />
         </div>
+        {!titleLengthCheck && <div className="small text-danger mb-3">title should be at least 5 characters</div>}
         <div className="mb-3">
           <label htmlFor="exampleFormControlTextarea1" className="form-label">
             description
@@ -49,6 +59,8 @@ function Addnote() {
             value={tempNote.description}
             onChange={changeHandler}
           ></textarea>
+          {!descriptionLengthCheck && <div className="small text-danger mb-3">description should be at least 5 characters</div>}
+
           <label htmlFor="exampleFormControlTextarea1" className="form-label">
             tag
           </label>
@@ -60,7 +72,7 @@ function Addnote() {
             value={tempNote.tag}
             onChange={changeHandler}
           ></textarea>
-          <button className='btn btn-primary my-3' onClick={clickHandler}>Submit</button>
+          <button className='btn btn-primary my-3' disabled={lengthCheck} onClick={clickHandler}>Submit</button>
         </div>
       </div>
   )

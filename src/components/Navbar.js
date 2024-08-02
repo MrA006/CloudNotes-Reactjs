@@ -2,17 +2,19 @@ import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import UserContext from "../context/users/createContext";
 
-function Navbar() {
+function Navbar(props) {
   let location = useLocation();
   const logged = localStorage.getItem('logged') === 'true';
   const userHandler = useContext(UserContext);
   const {signOut} = userHandler;
+  const {showAlert} = props;
 
   const navi = useNavigate();
 
   const logOut = () =>{
     navi('/login');
     signOut();
+    showAlert('logged out Successfully','success');
   }
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

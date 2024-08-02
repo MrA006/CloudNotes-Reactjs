@@ -1,6 +1,8 @@
 
 import { useNavigate } from "react-router-dom";
 import UserContext from "./createContext";
+import { useEffect, useState } from "react";
+
 
 
 const UserState = (props) => {
@@ -60,8 +62,9 @@ const signUpUser = async (credentials) => {
 
   }
 
+
   return (
-    <UserContext.Provider value={{ loginUser, signUpUser, signOut }}>
+    <UserContext.Provider value={{ loginUser, signUpUser, signOut}}>
       {props.children}
     </UserContext.Provider>
   );
