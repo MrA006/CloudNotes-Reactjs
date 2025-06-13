@@ -16,7 +16,9 @@ router.post('/createuser',
         body('password', 'Password should be at least 5 characters').isLength({ min: 5 })
     ],
     async (req, res) => {
+
         const errors = validationResult(req);
+        console.log("errors: ", errors)
         let success = false;
         if (!errors.isEmpty()) {
             return res.status(400).json({ success, errors: errors.array() });

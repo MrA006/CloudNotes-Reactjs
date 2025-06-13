@@ -87,33 +87,27 @@ router.put(
 
   
 // ROUTE 4: delete a note - PUT /api/notes/deletenote
-
-router.put(
-  "/deletenote/:id",
-  fetchuser,
-  
-  async (req, res) => {
+router.delete("/deletenote/:id", fetchuser, async (req, res) => {
+  try {
+    let note = await Notes.findById(req.params.id);
     
-    try {
-      
-      let note = await Notes.findById(req.params.id);
-      console.log(note);
-      
-      if(!note){return res.status(404).json({error:"NOT FOUND"});}
-
-      if(note.user.toString() !== req.user.id){
-        return res.status(401).json({error:"NOT permissable"});
-      }
-
-      note = await Notes.findByIdAndDelete(req.params.id);
-
-      //await note.save();
-      res.json(note);
-    } catch (error) {
-      console.error('Error during login:', error);
-      return res.status(500).json({ error: "Internal Server Error" });
+    if (!note) {
+      return res.status(404).json({ success: false, error: "Note not found" });
     }
+
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).json({ success: false, error: "Not authorized" });
+    }
+
+    note = await Notes.findByIdAndDelete(req.params.id);
+    
+    // Return success response with deleted note
+    res.json({ success: true, note });
+  } catch (error) {
+    console.error('Error deleting note:', error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
-);
+});
+
   
 module.exports = router;

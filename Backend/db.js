@@ -1,11 +1,21 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-const mongoURI = 'mongodb://localhost:27017/iNotebook';
+
+const mongoURI = process.env.connectionString;
 
 const connectToMongo = async () => {
-  
-        await mongoose.connect(mongoURI,);
-        console.log("MongoDB connected successfully");
-   
+  try {
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10
+    });
+    console.log("Connected to MongoDB Atlas successfully");
+  } catch (error) {
+    console.error("Connection error:", error.message);
+    process.exit(1);
+  }
 };
 
 module.exports = connectToMongo;

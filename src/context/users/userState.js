@@ -1,70 +1,94 @@
-
 import { useNavigate } from "react-router-dom";
 import UserContext from "./createContext";
-import { useEffect, useState } from "react";
-
-
+import Cookies from 'js-cookie';
 
 const UserState = (props) => {
+  const navi = useNavigate();
 
-    const navi = useNavigate();
-
-//login User and get auth token
+  // Login User and get auth token
   const loginUser = async (credentials) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    
-    const response = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: myHeaders,
-      body:JSON.stringify(credentials)
-    });
-    const res = await response.json();
-    if(res.success){
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+      });
       
-      localStorage.setItem('auth-token', res.token);
-      localStorage.setItem('logged', "true");
-      navi('/');
-      return true;
-    }else{
-      alert('incorrect credentials');
+      const res = await response.json();
+      
+      if (res.success) {
+        // Set auth token in cookie with expiration (7 days)
+        Cookies.set('auth-token', res.token, {
+          expires: 7, // days
+          secure: process.env.NODE_ENV === 'production', // secure in production
+          sameSite: 'strict',
+          path: '/'
+        });
+        
+        // Set logged status in localStorage (if needed for UI state)
+        localStorage.setItem('logged', "true");
+        navi('/');
+        return true;
+      } else {
+        throw new Error(res.error || 'Incorrect credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert(error.message || 'Login failed. Please try again.');
       return false;
     }
   }
 
-//Create User
-const signUpUser = async (credentials) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    
-    const response = await fetch("http://localhost:5000/api/auth/createuser", {
-      method: "POST",
-      headers: myHeaders,
-      body:JSON.stringify(credentials)
-    });
+  // Create User
+  const signUpUser = async (credentials) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/createuser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+      });
 
-    const authToken = await response.json();
-    if(authToken.success){
-
-      localStorage.setItem('auth-token', authToken.token);
-      navi('/login');
-    }else{
-      alert('incorrect credentials');
+      const authToken = await response.json();
+      
+      if (authToken.success) {
+        // Set auth token in cookie
+        Cookies.set('auth-token', authToken.token, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          path: '/'
+        });
+        
+        // Set logged status
+        localStorage.setItem('logged', "true");
+        navi('/');
+        return true;
+      } else {
+        throw new Error(authToken.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert(error.message || 'Registration failed. Please try again.');
+      return false;
     }
+  }
+
+  // SignOut 
+  const signOut = () => {
+    // Remove auth token cookie
+    Cookies.remove('auth-token', { path: '/' });
     
-  }
-
-  //signOut 
-
-  const signOut = ()=>{
-    localStorage.setItem('auth-token', null);
+    // Remove logged status
     localStorage.setItem('logged', 'false');
-
+    navi('/login');
   }
-
 
   return (
-    <UserContext.Provider value={{ loginUser, signUpUser, signOut}}>
+    <UserContext.Provider value={{ loginUser, signUpUser, signOut }}>
       {props.children}
     </UserContext.Provider>
   );
