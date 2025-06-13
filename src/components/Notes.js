@@ -52,13 +52,6 @@ function Notes(props) {
     <div className="container my-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h2 mb-0">Your Notes</h1>
-        <button 
-          className="btn btn-primary d-flex align-items-center"
-          onClick={() => document.getElementById('add-note-btn')?.click()}
-        >
-          <FiPlus className="me-2" />
-          Add Note
-        </button>
       </div>
 
       {/* Search and Filter Section */}

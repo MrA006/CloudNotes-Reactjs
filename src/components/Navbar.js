@@ -48,7 +48,7 @@ function Navbar(props) {
           </ul>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className={`btn btn-primary mx-2 ${logged?'d-none':''}`} to="/login">
+              <Link className={`btn btn-primary mx-2 mb-2 ${logged?'d-none':''}`} to="/login">
                 Login
               </Link>
             </li>
