@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import NoteContext from "./createContext";
-import Cookies from 'js-cookie'; 
-import axios from "axios"
+import Cookies from 'js-cookie';
+import axios from "axios";
 
 const NoteState = (props) => {
   const [notes, setNotes] = useState([]);
-  
+
   // Helper function to get auth token from cookies
   const getAuthToken = () => {
     return Cookies.get('auth-token');
@@ -17,17 +17,15 @@ const NoteState = (props) => {
       const authToken = getAuthToken();
       if (!authToken) return;
 
-      const response = await fetch("http://localhost:5000/api/notes/getnotes", {
-        method: "GET",
+      const response = await axios.get('/api/notes/getnotes', {
         headers: {
           "Content-Type": "application/json",
           "auth-token": authToken
-        },
+        }
       });
 
-      const data = await response.json();
-      if (data.success) {
-        setNotes(data.notes);
+      if (response.data.success) {
+        setNotes(response.data.notes);
       }
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -50,21 +48,20 @@ const NoteState = (props) => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/notes/addnote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken
-        },
-        body: JSON.stringify({ title, description, tag })
-      });
+      const response = await axios.post('/api/notes/addnote', 
+        { title, description, tag },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": authToken
+          }
+        }
+      );
 
-      const addedNote = await response.json();
-      
-      if (response.ok && addedNote.success) {
-        setNotes(notes.concat(addedNote));
+      if (response.data.success) {
+        setNotes(notes.concat(response.data));
       } else {
-        console.error("Failed to add note:", addedNote.error);
+        console.error("Failed to add note:", response.data.error);
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -72,35 +69,30 @@ const NoteState = (props) => {
   };
 
   // Delete a Note
-const deleteNote = async (id) => {
-  try {
-    const authToken = getAuthToken();
-    if (!authToken) return;
+  const deleteNote = async (id) => {
+    try {
+      const authToken = getAuthToken();
+      if (!authToken) return;
 
-    // Optimistic UI update
-    setNotes(notes.filter(note => note._id !== id));
+      // Optimistic UI update
+      setNotes(notes.filter(note => note._id !== id));
 
-    const response = await axios.delete(
-        `http://localhost:5000/api/notes/deletenote/${id}`,
-        {
-            headers: {
-                "Content-Type": "application/json",
-                "auth-token": authToken
-            },
+      const response = await axios.delete(`/api/notes/deletenote/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": authToken
         }
-    );
+      });
 
-    const result = await response.json();
-    
-    // Check for both response status and result presence
-    if (!response.ok || !result) {
-      throw new Error(result.error || "Failed to delete note");
+      // Axios automatically parses JSON, so no need for .json()
+      if (!response.data) {
+        throw new Error(response.data?.error || "Failed to delete note");
+      }
+    } catch (error) {
+      console.error("Delete note error:", error.message);
+      getNotes(); // Refresh notes from server
     }
-  } catch (error) {
-    console.error("Delete note error:", error.message);
-    getNotes(); // Refresh notes from server
-  }
-};
+  };
 
   // Update a Note
   const editNote = async (note) => {
@@ -111,23 +103,22 @@ const deleteNote = async (id) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/notes/updatenote/${note._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken
-        },
-        body: JSON.stringify(note)
-      });
+      const response = await axios.put(`/api/notes/updatenote/${note._id}`, 
+        note,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": authToken
+          }
+        }
+      );
 
-      const updatedNote = await response.json();
-      
-      if (response.ok && updatedNote.success) {
-        setNotes(notes.map(n => 
-          n._id === note._id ? { ...n, ...updatedNote } : n
+      if (response.data.success) {
+        setNotes(notes.map(n =>
+          n._id === note._id ? { ...n, ...response.data } : n
         ));
       } else {
-        console.error("Failed to update note:", updatedNote.error);
+        console.error("Failed to update note:", response.data.error);
       }
     } catch (error) {
       console.error("Network error:", error);
