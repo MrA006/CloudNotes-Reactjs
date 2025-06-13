@@ -23,7 +23,7 @@ function App() {
     }, 2000);
   }
 
-  axios.defaults.baseURL = 'http://localhost:5000';
+  axios.defaults.baseURL = 'https://cloudnotes-8ua2.onrender.com';
 
   
 
